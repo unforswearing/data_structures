@@ -32,19 +32,21 @@ class queue {
     // if the queue has a finite length (it should)
     const isFull = () => {
       // restrictContainer();
-      let symbolTot = 0
-      this.container.forEach(item => {
+      let symbolTot = 0;
+      this.container.forEach((item) => {
         if (typeof item === "symbol") symbolTot++;
-      })
-      return (this.container.length - symbolTot) >= this.limit;
+      });
+      return this.container.length - symbolTot >= this.limit;
     };
+
+    const isSymbol = (s) => typeof s === "symbol"
 
     const enqueue = (item) => {
       if (!item) console.log("enq error: no argument was passed");
 
       restrictContainer();
-      
-      if (typeof item === "symbol") item = { type: "symbol", value: item}
+
+      if (isSymbol(item)) item = { type: "symbol", value: item };
 
       if (isFull()) {
         console.log(`enq error: queue is full (${this.limit} items)`);
@@ -89,6 +91,17 @@ class queue {
 
       if (isEmpty()) console.log("rot error: cannot rotate an empty queue");
 
+      let symbolContainer = [];
+      this.container.forEach((item, i) => {
+        if (isSymbol(item)) {
+          let position = i;
+          symbolContainer.push({ item, position });
+          this.container[i] = undefined;
+        }
+      });
+
+      this.container.filter(item => item === undefined)
+
       let len = this.container.length;
       if (num > this.limit) num = this.limit;
 
@@ -98,14 +111,22 @@ class queue {
 
       let items = this.container.splice(0, num);
       this.container = this.container.concat(items);
+
+      if (symbolContainer.length > 0) {
+        this.container = symbolContainer.map(item => { 
+          if (isSymbol(item)) symbolContainer[i] = item.item
+        }).concat(this.container);
+      }
+
+      restrictContainer()
       return this.container;
     };
 
     const reset = () => {
-      this.total = this.head = this.tail = 0
+      this.total = this.head = this.tail = 0;
       this.container = new Array();
-      return this.container
-    }
+      return this.container;
+    };
 
     const peek = () => this.container[this.head];
     const show = () => this.container;
@@ -122,3 +143,40 @@ class queue {
     return { enq, deq, all, see, ise, isf, rst, rot };
   }
 }
+
+let Q = new queue(2);
+
+Q.enq("fish");
+Q.enq(12);
+
+console.log(Q.all());
+Q.rot(1);
+console.log(Q.all());
+console.log(Q.see());
+
+Q.deq();
+console.log(Q.all());
+
+console.log(Q.see());
+
+Q.rot(1);
+
+console.log(Q.see());
+console.log(Q.all());
+
+Q.rst();
+Q.enq("more");
+
+console.log(Q.all());
+
+Q.enq("another");
+Q.enq("testing this");
+
+console.log(Q.all());
+
+Q.enq(44);
+
+console.log(Q.all());
+
+console.log(Q.isf());
+console.log(Q.ise());
