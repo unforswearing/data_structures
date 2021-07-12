@@ -1,6 +1,6 @@
 -- this metatable allows any value added directly to 'db'
 -- to also be added in db.data with additional information
--- this could be used for a million things. maybe make this
+-- this could be used for many things. maybe make this
 -- in typescript for the trail report project
 _G.id = 0
 local db = {data = {}, atad = {}}
