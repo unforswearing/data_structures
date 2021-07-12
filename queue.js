@@ -79,6 +79,8 @@ class queue {
       const value = this.container[this.head];
       if (!value) return undefined;
 
+      if (typeof value === "object") value = value.value;
+
       this.container[this.head] = Symbol(value);
       this.head++;
       this.total--;
@@ -95,12 +97,11 @@ class queue {
       this.container.forEach((item, i) => {
         if (isSymbol(item)) {
           let position = i;
-          symbolContainer.push({ item, position });
-          this.container[i] = undefined;
+          symbolContainer.push({ v: item, p: position });
         }
       });
 
-      this.container.filter(item => item === undefined)
+      this.container.filter(item => item === "symbol")
 
       let len = this.container.length;
       if (num > this.limit) num = this.limit;
@@ -114,7 +115,7 @@ class queue {
 
       if (symbolContainer.length > 0) {
         this.container = symbolContainer.map(item => { 
-          if (isSymbol(item)) symbolContainer[i] = item.item
+          if (isSymbol(item)) symbolContainer[i] = item.v
         }).concat(this.container);
       }
 
@@ -165,15 +166,17 @@ console.log(Q.see());
 console.log(Q.all());
 
 Q.rst();
+
 Q.enq("more");
 
 console.log(Q.all());
 
-Q.enq("another");
+Q.enq(Symbol("will this work?"));
 Q.enq("testing this");
 
 console.log(Q.all());
 
+Q.deq()
 Q.enq(44);
 
 console.log(Q.all());
